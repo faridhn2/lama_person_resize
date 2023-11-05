@@ -170,12 +170,12 @@ def resize_person(img,longer_flag=True,fat_flag=False,slim_flag=False,shorter_fl
     net = cv2.dnn.readNet('yolov3.weights', 'object-detection-opencv/yolov3.cfg')
 
     # create input blob
-    blob = cv2.dnn.blobFromImage(image, scale, (416,416), (0,0,0), True, crop=False)
+    blob = cv2.dnn.blobFromImage(img, scale, (416,416), (0,0,0), True, crop=False)
 
     # set input blob for the network
     net.setInput(blob)
 
-    mask = np.zeros((image.shape[0],image.shape[1]),dtype=np.uint8)
+    mask = np.zeros((img.shape[0],img.shape[1]),dtype=np.uint8)
 
     class_ids = []
     confidences = []
@@ -302,7 +302,6 @@ def resize_person(img,longer_flag=True,fat_flag=False,slim_flag=False,shorter_fl
             mask = cv2.bitwise_xor(mask2,mask1)
           break
     return img,mask
-
 NUM_THREADS = str(multiprocessing.cpu_count())
 
 # fix libomp problem on windows https://github.com/Sanster/lama-cleaner/issues/56
