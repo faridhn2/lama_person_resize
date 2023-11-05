@@ -148,11 +148,9 @@ def get_output_layers(net):
 
 # function to draw bounding box on the detected object with class name
 
-def resize_person(image,big_flag=True):
+def resize_person(image,longer_flag=True,fat_flag=False,slim_flag=False,shorter_flag=False):
 
-    if big_flag:
-      fx_rate = 1
-      fy_rate = 1
+    
 
     big_rate_h = 100
     big_rate_w = 100
@@ -216,35 +214,86 @@ def resize_person(image,big_flag=True):
           h = int(box[3]*(1+1/big_rate_w))
           x = int(max(0,box[0]-w/(big_rate_w*2)))
           y = int(max(0,box[1]-h/(big_rate_h*2)))
-          if big_flag:
+          fy_rate = 1
+          fx_rate = 1
+          if longer_flag:
 
-            fy_rate = min(15,(1-h/image.shape[0])*100)
-            fx_rate = fy_rate/3
-          else:
-            fy_rate = -15
-            fx_rate = -fy_rate/3
-          print(x,y)
-          new_img = image[y:(min(Height,int(y+h*(1+(1/big_rate_h))))),x:(int(x+w))]
-          print(new_img.shape,image.shape)
-          
-          new_img = cv2.resize(new_img,(0,0),fx=1+(fx_rate/100),fy=1+(fy_rate/100))
-          if big_flag and (image.shape[0]-new_img.shape[0])/image.shape[0]>0.1:
-            image[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
-                x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])] = new_img
-          if not big_flag:
-            image[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
-                x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])] = new_img
-          if  big_flag and (image.shape[0]-new_img.shape[0])/image.shape[0]>0.1:
+            fy_rate = min(15,(1-h/img.shape[0])*100)
             
-            mask[y-int((fy_rate/100)*new_img.shape[0])-20:y-int((fy_rate/100)*new_img.shape[0]),
-                x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])]=255
-            mask[y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0])+20,
-                x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])]=255
-            mask[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
-                x-int((fx_rate/100)*new_img.shape[1])-20:x-int((fx_rate/100)*new_img.shape[1])] = 255
-            mask[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
-                x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])+20] = 255
-          if not big_flag:
+          elif shorter_flag:
+            fy_rate = -15
+          
+          if fat_flag:
+
+            fx_rate = min(15,(1-w/img.shape[1])*100)
+            
+          elif slim_flag:
+            fx_rate = -15
+          print(x,y)
+          new_img = img[y:(min(Height,int(y+h*(1+(1/big_rate_h))))),x:(int(x+w))]
+          print(new_img.shape,img.shape)
+
+          new_img = cv2.resize(new_img,(0,0),fx=1+(fx_rate/100),fy=1+(fy_rate/100))
+          if longer_flag and fat_flag:
+            if  (img.shape[1]-new_img.shape[1])/img.shape[1]>0.1 and (img.shape[0]-new_img.shape[0])/img.shape[0]>0.1:
+              img[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                  x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])] = new_img
+          elif longer_flag:
+            if   (img.shape[0]-new_img.shape[0])/img.shape[0]>0.1:
+              img[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                  x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])] = new_img
+          elif fat_flag:
+            if   (img.shape[1]-new_img.shape[1])/img.shape[1]>0.1:
+              img[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                  x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])] = new_img
+
+          else:
+            img[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])] = new_img
+          
+          
+          if longer_flag and fat_flag:
+            if  (img.shape[1]-new_img.shape[1])/img.shape[1]>0.1 and (img.shape[0]-new_img.shape[0])/img.shape[0]>0.1:
+          
+
+              mask[y-int((fy_rate/100)*new_img.shape[0])-20:y-int((fy_rate/100)*new_img.shape[0]),
+                  x-int((fx_rate/100)*new_img.shape[1])-20:x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])]=255
+              mask[y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0])+20,
+                  x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])]=255
+              mask[y-int((fy_rate/100)*new_img.shape[0])-20:y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                  x-int((fx_rate/100)*new_img.shape[1])-20:x-int((fx_rate/100)*new_img.shape[1])] = 255
+              mask[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                  x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])+20] = 255
+          
+          elif longer_flag :
+            if   (img.shape[0]-new_img.shape[0])/img.shape[0]>0.1:
+          
+
+              mask[y-int((fy_rate/100)*new_img.shape[0])-20:y-int((fy_rate/100)*new_img.shape[0]),
+                  x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])]=255
+              mask[y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0])+20,
+                  x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])]=255
+              mask[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                  x-int((fx_rate/100)*new_img.shape[1])-20:x-int((fx_rate/100)*new_img.shape[1])] = 255
+              mask[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                  x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])+20] = 255
+          
+          elif fat_flag :
+            if   (img.shape[1]-new_img.shape[1])/img.shape[1]>0.1:
+          
+
+              mask[y-int((fy_rate/100)*new_img.shape[0]):y-int((fy_rate/100)*new_img.shape[0]),
+                  x-int((fx_rate/100)*new_img.shape[1])-20:x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])]=255
+              mask[y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0])+20,
+                  x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])]=255
+              mask[y-int((fy_rate/100)*new_img.shape[0])-20:y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                  x-int((fx_rate/100)*new_img.shape[1]):x-int((fx_rate/100)*new_img.shape[1])] = 255
+              mask[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                  x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])+20] = 255
+          
+          
+          
+          else:
             mask1 = mask.copy()
             mask1[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
               x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int(2*(fx_rate/100)*new_img.shape[1])] = 255
@@ -252,7 +301,7 @@ def resize_person(image,big_flag=True):
             mask2[y:(min(Height,int(y+h*(1+(1/big_rate_h))))),x:(int(x+w))]=255
             mask = cv2.bitwise_xor(mask2,mask1)
           break
-    return image,mask
+    return img,mask
 
 NUM_THREADS = str(multiprocessing.cpu_count())
 
@@ -404,16 +453,24 @@ def process():
     # RGB
     form = request.form
     option = request.form['options']
-    if option == 'smaller':
-        big_flag = False
-    else:
-        big_flag = True
+    if option == 'shorter-slim':
+        shorter_flag = slim_flag = True
+        longer_flag = fat_flag = False
+    elif option == 'shorter-fat':
+        shorter_flag = fat_flag = True
+        longer_flag = slim_flag = False
+    elif option == 'longer-fat':
+        longer_flag = fat_flag = True
+        shorter_flag = slim_flag = False
+    elif option == 'longer-slim':
+        longer_flag = slim_flag = True
+        shorter_flag = fat_flag = False
     origin_image_bytes = input["image"].read()
     image, alpha_channel, exif_infos = load_img(origin_image_bytes, return_exif=True)
 
     # mask, _ = load_img(input["mask"].read(), gray=True)
     
-    image , mask = resize_person(image,big_flag=big_flag)
+    image , mask = resize_person(image,longer_flag=longer_flag,shorter_flag=shorter_flag,slim_flag=slim_flag,fat_flag=fat_flag)
     mask = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)[1]
     if image.shape[:2] != mask.shape[:2]:
         return (
@@ -672,7 +729,7 @@ def index():
 
         # mask, _ = load_img(input["mask"].read(), gray=True)
         
-        image , mask = resize_person(image,big_flag=big_flag)
+        image , mask = resize_person(image,longer_flag=longer_flag,shorter_flag=shorter_flag,slim_flag=slim_flag,fat_flag=fat_flag)
         mask = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)[1]
         if image.shape[:2] != mask.shape[:2]:
             return (
