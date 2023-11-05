@@ -148,14 +148,14 @@ def get_output_layers(net):
 
 # function to draw bounding box on the detected object with class name
 
-def resize_person(image,longer_flag=True,fat_flag=False,slim_flag=False,shorter_flag=False):
+def resize_person(img,longer_flag=True,fat_flag=False,slim_flag=False,shorter_flag=False):
 
     
 
     big_rate_h = 100
     big_rate_w = 100
-    Width = image.shape[1]
-    Height = image.shape[0]
+    Width = img.shape[1]
+    Height = img.shape[0]
     scale = 0.00392
 
     # read class names from text file
