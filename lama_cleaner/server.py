@@ -290,10 +290,18 @@ def resize_person(img,longer_flag=True,fat_flag=False,slim_flag=False,shorter_fl
                   x-int((fx_rate/100)*new_img.shape[1]):x-int((fx_rate/100)*new_img.shape[1])] = 255
               mask[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
                   x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int((fx_rate/100)*new_img.shape[1])+20] = 255
+
+              mask1 = np.zeros((img.shape[0],img.shape[1]),dtype=np.uint8).copy()
+              mask1[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
+                x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int(1*(fx_rate/100)*new_img.shape[1])] = 255
+              mask2 = mask.copy()
+              mask2[y:(min(Height,int(y+h*(1+(1/big_rate_h))))),(max(0,int(x-w*(1+(1/big_rate_w))))):(min(Width,int(x+w*(1+(1/big_rate_w)))))]=255
+              mask = cv2.bitwise_xor(mask2,mask1)
           
           
           
-          if shorter_flag or slim_flag :
+          else:
+            
             mask1 = mask.copy()
             mask1[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
               x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int(2*(fx_rate/100)*new_img.shape[1])] = 255
