@@ -719,10 +719,18 @@ def index():
         input = request.files
         form = request.form
         option = request.form['options']
-        if option == 'smaller':
-            big_flag = False
-        else:
-            big_flag = True
+        if option == 'shorter-slim':
+            shorter_flag = slim_flag = True
+            longer_flag = fat_flag = False
+        elif option == 'shorter-fat':
+            shorter_flag = fat_flag = True
+            longer_flag = slim_flag = False
+        elif option == 'longer-fat':
+            longer_flag = fat_flag = True
+            shorter_flag = slim_flag = False
+        elif option == 'longer-slim':
+            longer_flag = slim_flag = True
+            shorter_flag = fat_flag = False
         # RGB
         origin_image_bytes = input["image"].read()
         image, alpha_channel, exif_infos = load_img(origin_image_bytes, return_exif=True)
