@@ -293,7 +293,7 @@ def resize_person(img,longer_flag=True,fat_flag=False,slim_flag=False,shorter_fl
           
           
           
-          else:
+          if shorter_flag or slim_flag :
             mask1 = mask.copy()
             mask1[y-int((fy_rate/100)*new_img.shape[0]):y+new_img.shape[0]-int((fy_rate/100)*new_img.shape[0]),
               x-int((fx_rate/100)*new_img.shape[1]):x+new_img.shape[1]-int(2*(fx_rate/100)*new_img.shape[1])] = 255
